@@ -7,6 +7,7 @@ import torch
 
 from ..feature_store import FeatureStore
 from .ondisk_metadata import OnDiskFeatureData
+from .cache_based_feature_store import CacheBasedFeatureStore
 
 __all__ = ["TorchBasedFeatureStore", "load_feature_stores"]
 
@@ -162,9 +163,14 @@ def load_feature_stores(feat_data: List[OnDiskFeatureData]):
             feat_stores[key] = TorchBasedFeatureStore(torch.load(spec.path))
         elif spec.format == "numpy":
             mmap_mode = "r+" if not spec.in_memory else None
-            feat_stores[key] = TorchBasedFeatureStore(
-                torch.as_tensor(np.load(spec.path, mmap_mode=mmap_mode))
-            )
+            if spec.in_memory:
+                feat_stores[key] = TorchBasedFeatureStore(
+                    torch.as_tensor(np.load(spec.path, mmap_mode=mmap_mode))
+                )
+            else:
+                feat_stores[key] = CacheBasedFeatureStore(TorchBasedFeatureStore(
+                    torch.as_tensor(np.load(spec.path, mmap_mode=mmap_mode))
+                ), 131072)
         else:
             raise ValueError(f"Unknown feature format {spec.format}")
     return feat_stores

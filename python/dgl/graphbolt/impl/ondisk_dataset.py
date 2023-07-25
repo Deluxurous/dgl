@@ -24,6 +24,7 @@ from .csc_sampling_graph import (
     save_csc_sampling_graph,
 )
 from .ondisk_metadata import OnDiskGraphTopology, OnDiskMetaData, OnDiskTVTSet
+from ..feature_store import FeatureStore
 from .torch_based_feature_store import (
     load_feature_stores,
     TorchBasedFeatureStore,
@@ -302,7 +303,7 @@ class OnDiskDataset(Dataset):
         return self._graph
 
     @property
-    def feature(self) -> Dict[Tuple, TorchBasedFeatureStore]:
+    def feature(self) -> Dict[Tuple, FeatureStore]:
         """Return the feature."""
         return self._feature
 

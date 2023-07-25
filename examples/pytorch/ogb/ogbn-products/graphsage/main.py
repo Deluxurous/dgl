@@ -170,6 +170,7 @@ def run(args, device, data):
         # Loop over the dataloader to sample the computation dependency graph as a list of
         # blocks.
         for step, (input_nodes, seeds, blocks) in enumerate(dataloader):
+            print(input_nodes.shape[0])
             tic_step = time.time()
 
             # copy block to gpu
